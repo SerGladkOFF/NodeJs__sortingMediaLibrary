@@ -1,9 +1,14 @@
  const fs = require('fs')
  const path = require('path')
 
- const sortData  = ({basePath,newDir,deleteRoot})=>{
-     readDir(basePath,newDir)
-     if (deleteRoot) console.log("deleteRoot")
+ const sortData  = async (basePath,newDir,deleteRoot)=>{
+     const _readDir = readDir(basePath,newDir,deleteRoot)
+     if (_readDir) {
+        if (deleteRoot) fs.rmdirSync(basePath)
+        //console.log("deleteRoot")
+        return true
+     } else return false
+     
  }
 
  function readDir(basePath,newDir){
@@ -16,6 +21,9 @@
             if (state.isDirectory())  {
                 readDir(localPath,newDir)
             } else {
+
+                if (!fs.existsSync(newDir)) fs.mkdirSync(newDir)
+
                  const folderName = item.charAt(0);
                  const _path = path.join(newDir,folderName)
                  //если не существует папки то создать
@@ -26,14 +34,19 @@
                         localPath,
                         path.resolve(newDir,folderName,item)
                       )
+                      fs.unlinkSync(localPath)
                   }
             }} catch (error) {
                 console.log("Ошибка при парсинге",error)
+                return false
            }
         })
      } catch (error) {
         console.error(`Нет файлов/папок в директории ${basePath}`,error)
+        return false
      }
+
+     return true
  }
 
  module.exports = sortData
