@@ -2,16 +2,19 @@
  const path = require('path')
 
  const sortData  = async (basePath,newDir,deleteRoot)=>{
-     const _readDir = readDir(basePath,newDir,deleteRoot)
+     const _readDir = await readDir(basePath,newDir,deleteRoot)
+     console.log("_readDir",_readDir)
      if (_readDir) {
-        if (deleteRoot) fs.rmdirSync(basePath)
-        //console.log("deleteRoot")
+        if (deleteRoot){
+            //const _delete = await deleteDir(basePath)
+            console.log("_delete",deleteRoot)
+        } 
         return true
      } else return false
      
  }
 
- function readDir(basePath,newDir){
+ async function readDir(basePath,newDir,deleteRoot){
      try {
         const files = fs.readdirSync(basePath);
         files.forEach(item=>{
@@ -19,9 +22,9 @@
             const localPath = path.join(basePath,item)
             const state = fs.statSync(localPath)
             if (state.isDirectory())  {
-                readDir(localPath,newDir)
+                readDir(localPath,newDir,deleteRoot)
+              
             } else {
-
                 if (!fs.existsSync(newDir)) fs.mkdirSync(newDir)
 
                  const folderName = item.charAt(0);
@@ -34,9 +37,11 @@
                         localPath,
                         path.resolve(newDir,folderName,item)
                       )
-                      fs.unlinkSync(localPath)
+                      console.log(deleteRoot)
+                      if (deleteRoot) fs.unlinkSync(localPath)
                   }
-            }} catch (error) {
+            }
+        } catch (error) {
                 console.log("Ошибка при парсинге",error)
                 return false
            }
@@ -47,6 +52,15 @@
      }
 
      return true
+ }
+
+async function deleteDir(basePath){
+        
+        const files = fs.readdirSync(basePath);
+        files.forEach(item=>{
+            const localPath = path.join(basePath,item)
+            fs.rmdir(localPath)
+        })
  }
 
  module.exports = sortData

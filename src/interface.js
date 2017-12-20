@@ -28,11 +28,15 @@ const consoleQuestion = (question)=>{
        }
 
        deleteFlag = await consoleQuestion('Нужно удалять исходную папку?[y/n] * не обязательно:')
-       if (deleteFlag.toLowerCase() !=='y'
-            ||deleteFlag.toLowerCase() !=='n') {
-             console.log('Вы ввели неверное значения,исходная директория не будет удалена')
-       }else {
+       console.log("deleteFlag",deleteFlag.toLowerCase())
+       console.log("deleteFlag",deleteFlag.toLowerCase() !='y')
+       if (deleteFlag.toLowerCase() =='y'
+            ||deleteFlag.toLowerCase() =='n') {
+            console.log("введены верные значениеы")
             deleteFlag= deleteFlag.toLowerCase()==="y"?true:false
+       }else {
+            console.log('Вы ввели неверное значения,исходная директория не будет удалена') 
+            deleteFlag=false
        }
 
        return {
